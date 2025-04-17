@@ -3,28 +3,32 @@ import { mailHelper } from "../services/mailHelper.js";
 
 const testMailJob = "send test mail";
 
-agenda.define(testMailJob, async (job) => {
-  const { to, subject, text } = job.attrs.data;
-  console.log("Starting email job with data:", job.attrs.data);
-  try {
-    const mailSent = await mailHelper({
-      to,
-      subject,
-      text,
-    });
-    console.log("Test email sent successfully: ", mailSent);
-  } catch (error) {
-    console.error("Error in send test email job:", error);
-    throw error;
-  }
-}, {priority: 'high', concurrency: 10},);
+agenda.define(
+  testMailJob,
+  async (job) => {
+    const { to, subject, text } = job.attrs.data;
+    console.log("Starting email job with data:", job.attrs.data);
+    try {
+      const mailSent = await mailHelper({
+        to,
+        subject,
+        text,
+      });
+      console.log("Test email sent successfully: ", mailSent);
+    } catch (error) {
+      console.error("Error in send test email job:", error);
+      throw error;
+    }
+  },
+  { priority: "high", concurrency: 10 }
+);
 
-export const scheduleTestEmail = async (emailData, scheduledTime) => {
+export const scheduleTestEmail = async (emailData, delay) => {
   try {
-
     const emailScheduled = await agenda.schedule(
       // 'one  minute',
-      '2 minute',
+      // "1 minute",
+      delay,
       testMailJob,
       emailData
     );
