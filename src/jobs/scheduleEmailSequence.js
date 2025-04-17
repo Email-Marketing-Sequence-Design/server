@@ -1,5 +1,5 @@
-import { mailHelper } from "../services/mailHelper";
-import { agenda } from "../utils/agenda";
+import { mailHelper } from "../services/mailHelper.js";
+import { agenda } from "../utils/agenda.js";
 
 const sequenceJobName = "send email sequence";
 
@@ -27,7 +27,7 @@ agenda.define(sequenceJobName, async (job) => {
       };
       await agenda.schedule(nextDelay, sequenceJobName, data);
       console.log(
-        `⏳ Scheduled email #${nextIdx + 1} after delay "${nextDelay}"`
+        `⏳ Scheduled email "Subject: ${remainingEmails[0].subject}", after delay "${nextDelay}"`
       );
     }
   } catch (error) {
@@ -40,6 +40,7 @@ export const scheduleEmailSequence = async (emailAddress, emails) => {
   try {
     if (!emailAddress) return;
     if (!Array.isArray(emails) || emails.length === 0) return;
+    console.log("scheduleEmailSequence: ", emailAddress);
     const data = {
       to: emailAddress,
       emails,
