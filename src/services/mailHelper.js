@@ -12,17 +12,19 @@ const verifyEmailService = async () => {
 
 const mailHelper = async ({ to, subject, text }) => {
   try {
+    console.log("i am here+++++++++++++++++++++++++++++++")
     const emailInfo = await transporter.sendMail({
       from: config.SMTP_SENDER_EMAIL,
       to,
       subject,
       text,
     });
-    console.log('Email sent successfully:', emailInfo.messageId);
+    console.log('Email sent successfully:', emailInfo);
     return emailInfo
   } catch (error) {
     console.error("Error sending email: ", error);
     throw error;
   }
 };
+
 export {verifyEmailService, mailHelper}

@@ -1,6 +1,8 @@
 import app from './app.js';
 import mongoose from "mongoose";
 import config from "./config/index.js";
+import { verifyEmailService } from './services/mailHelper.js';
+import { startAgenda } from './utils/agenda.js';
 
 (async () => {
   try {
@@ -9,6 +11,15 @@ import config from "./config/index.js";
       }).catch((error) => {
         console.error('Error connecting to MongoDB:', error.message);
       });
+
+       // Start Agenda
+    await startAgenda();
+    
+    // Define Agenda jobs
+    // defineJobs();
+    
+    // Verify email service
+    await verifyEmailService();
 
     app.on("error", (err) => {
       console.error("ERROR: ", err);

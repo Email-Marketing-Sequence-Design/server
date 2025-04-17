@@ -24,7 +24,6 @@ app.post("/api/test-email", async (req, res) => {
   try {
     const { to, subject, text, delay } = req.body;
     const scheduleTime = new Date(Date.now() + (delay || 0) * 1000);
-
     await scheduleTestEmail({ to, subject, text }, scheduleTime);
     res.json({ message: "Test email scheduled successfully" });
   } catch (error) {
