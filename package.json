@@ -1,5 +1,5 @@
 {
-  "name": "email-marketing-sequence-server",
+  "name": "mailquencer_backend_server",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
