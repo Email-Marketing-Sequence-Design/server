@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
-import asyncHandler from "../services/asyncHandler";
-import CustomError from "../services/CustomError";
-
+import asyncHandler from "../services/asyncHandler.js";
+import CustomError from "../services/CustomError.js";
+import formidable from "formidable";
 export const cookieOptions = {
   expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
   httpOnly: true,
@@ -14,38 +14,50 @@ export const cookieOptions = {
  * @returns User Object
  ******************************************************/
 export const signUp = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-  // validation
-  if (!name || !email || !password) {
-    throw new CustomError("Please fill all Credentials", 400);
-  }
+  const form = formidable({ multiples: false });
 
-  // Adding this user's Credentials data to database
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      throw new CustomError("Form parsing failed", 400);
+    }
+    const name     = fields.name.toString();
+    const email    = fields.email.toString();
+    const password = fields.password.toString();
+    console.log("fields: ", fields);
+    // const { name, email, password } = fields;
+    console.log("signup data: ", { name, email, password });
+    // validation
+    if (!name || !email || !password) {
+      throw new CustomError("Please fill all Credentials", 400);
+    }
 
-  // But first check if user already exists?
-  const exitingUser = await User.findOne({ email });
-  if (exitingUser) {
-    throw new CustomError("User already exists", 400);
-  }
-  // Now add data
-  const user = await User.create({
-    name,
-    email,
-    password,
-  });
+    // Check if user already exists
+    const exitingUser = await User.findOne({ email });
+    if (exitingUser) {
+      throw new CustomError("User already exists", 400);
+    }
+    console.log("creating +++++++++++++++++++++++++++++++++++++++++++");
+    // Now add data
+    const user = await User.create({
+      name,
+      email,
+      password,
+    });
 
-  // Generate Token of user
-  const token = user.getJWTToken();
+    // Generate Token
+    const token = user.getJWTToken();
 
-  // Store this token in user's cookie
-  res.cookie("token", token, cookieOptions);
+    // Store token in user's cookie
+    res.cookie("token", token, cookieOptions);
 
-  console.log("Cookies: ", req.cookies);
-  // Sending token to client in response
-  res.status(200).json({
-    success: true,
-    message: "Your Account created successfully",
-    // token,
+    console.log("Cookies: ", req.cookies);
+
+    // Send response
+    res.status(200).json({
+      success: true,
+      message: "Your Account created successfully",
+      // token,
+    });
   });
 });
 
@@ -121,7 +133,6 @@ export const getProfile = asyncHandler(async (req, res) => {
     user,
   });
 });
-
 
 /**********************************************************
  * @checkTokenValidity
